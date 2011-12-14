@@ -1033,8 +1033,11 @@ public class CDMAPhone extends PhoneBase {
                 // instead, extract it from system properties
                 if (SystemProperties.get("ro.ril.samsung_cdma").equals("true"))
                     mMeid = SystemProperties.get("ro.ril.MEID");
-                else
+                else{
+		    		if(respId[3].length()==16)
+					respId[3]=respId[3].substring(2);		
                     mMeid =  respId[3];
+				}
             }
             break;
 

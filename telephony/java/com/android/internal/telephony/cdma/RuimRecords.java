@@ -321,8 +321,8 @@ public final class RuimRecords extends IccRecords {
         Log.d(LOG_TAG, "RuimRecords: record load complete");
 
         // Further records that can be inserted are Operator/OEM dependent
-
-        String operator = getRUIMOperatorNumeric();
+        //String operator = getRUIMOperatorNumeric();
+		String operator = SystemProperties.get("ro.cdma.home.operator.numeric");
 
         if (operator != null) {
             SystemProperties.set(PROPERTY_ICC_OPERATOR_NUMERIC, operator);

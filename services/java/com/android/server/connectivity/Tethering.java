@@ -54,6 +54,9 @@ import com.android.internal.util.HierarchicalStateMachine;
 import java.io.File;
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -180,7 +183,7 @@ public class Tethering extends INetworkManagementEventObserver.Stub {
         mDnsServers[0] = DNS_DEFAULT_SERVER1;
         mDnsServers[1] = DNS_DEFAULT_SERVER2;
 
-        mLegacy = (new File("/sys/devices/platform/msm_hsusb/composition")).exists();
+        //mLegacy = (new File("/sys/devices/platform/msm_hsusb/gadget/switchusb")).exists();
     }
 
     public void interfaceLinkStatusChanged(String iface, boolean link) {
@@ -436,7 +439,25 @@ public class Tethering extends INetworkManagementEventObserver.Stub {
         }
     }
 
+    private boolean isUsbConnected(){
+    	try {
+			FileReader fr = new FileReader("/sys/devices/platform/huawei_battery/power_supply/usb/online");
+			int result=fr.read();
+        	if(result=='1'){//ascii code =49
+        		return true;
+        	}
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	return false;
+    }
+
     private void updateUsbStatus() {
+    	mUsbConnected=isUsbConnected();
         boolean enable = mUsbConnected && mUsbMassStorageOff;
 
         if (mBooted) {
@@ -449,6 +470,7 @@ public class Tethering extends INetworkManagementEventObserver.Stub {
             String action = intent.getAction();
             if (action.equals(UsbManager.ACTION_USB_STATE)) {
                 mUsbConnected = intent.getExtras().getBoolean(UsbManager.USB_CONNECTED);
+				mUsbConnected=isUsbConnected();
                 updateUsbStatus();
             } else if (action.equals(Intent.ACTION_MEDIA_SHARED)) {
                 mUsbMassStorageOff = false;
@@ -473,7 +495,8 @@ public class Tethering extends INetworkManagementEventObserver.Stub {
             int usbState = 2;
             // check if usb is mounted (path) or not (empty, returns -1)
             try {
-                usbState = (new FileInputStream(new File("/sys/devices/platform/usb_mass_storage/lun0/file"))).read();
+            	usbState = (new FileInputStream(new File("/sys/devices/platform/msm_hsusb/gadget/lun0/file"))).read();
+                
                 if (usbState != -1) {
                     mProbing--;
                 }

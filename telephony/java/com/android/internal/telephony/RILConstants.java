@@ -71,7 +71,7 @@ public interface RILConstants {
     /* CDMA subscription source. See ril.h RIL_REQUEST_CDMA_SET_SUBSCRIPTION */
     int SUBSCRIPTION_FROM_RUIM      = 0; /* CDMA subscription from RUIM when available */
     int SUBSCRIPTION_FROM_NV        = 1; /* CDMA subscription from NV */
-    int PREFERRED_CDMA_SUBSCRIPTION = SUBSCRIPTION_FROM_NV;
+    int PREFERRED_CDMA_SUBSCRIPTION = SUBSCRIPTION_FROM_RUIM;
 
     int CDMA_CELL_BROADCAST_SMS_DISABLED = 1;
     int CDMA_CELL_BROADCAST_SMS_ENABLED  = 0;

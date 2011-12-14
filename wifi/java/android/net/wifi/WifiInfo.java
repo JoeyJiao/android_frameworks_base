@@ -142,6 +142,12 @@ public class WifiInfo implements Parcelable {
     }
 
     public String getMacAddress() {
+	if(mMacAddress!=null && mMacAddress.length()==17){
+		if(mMacAddress.contains("."))
+			mMacAddress=mMacAddress.replaceAll("\\.","");
+		else if(mMacAddress.contains(":"))
+			mMacAddress=mMacAddress.replaceAll(":","");
+	}
         return mMacAddress;
     }
 
