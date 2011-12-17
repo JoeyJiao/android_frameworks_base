@@ -414,7 +414,11 @@ public class CDMAPhone extends PhoneBase {
     }
 
     public String getLine1Number() {
-        return mSST.getMdnNumber();
+	String myNumber=mSST.getMdnNumber();
+	if(myNumber!=null && myNumber.equals("")){
+		myNumber=getVoiceMailNumber();
+	}
+	return myNumber;
     }
 
     public String getCdmaPrlVersion(){
@@ -733,7 +737,7 @@ public class CDMAPhone extends PhoneBase {
         if (cdmaNumber.length() > 0) {
             if (cdmaNumber.equals("mine")) {
                 // Workaround for Sprint and similar where we dial our own phone number for voicemail
-                number = sp.getString(VM_NUMBER_CDMA, getLine1Number());
+                number = sp.getString(VM_NUMBER_CDMA, "00000000000");
             }
             else {
                 // Otherwise we will assign the contents of the variable to the default voicemail number
