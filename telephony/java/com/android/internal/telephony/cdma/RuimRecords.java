@@ -179,8 +179,9 @@ public final class RuimRecords extends IccRecords {
         // Guess the MNC length based on the MCC if we don't
         // have a valid value in ef[ad]
 
-        int mcc = Integer.parseInt(mImsi.substring(0,3));
-        return mImsi.substring(0, 3 + MccTable.smallestDigitsMccForMnc(mcc));
+        //int mcc = Integer.parseInt(mImsi.substring(0,3));
+        //return mImsi.substring(0, 3 + MccTable.smallestDigitsMccForMnc(mcc));
+		return "46003";
     }
 
     @Override
@@ -329,8 +330,10 @@ public final class RuimRecords extends IccRecords {
         }
 
         if (mImsi != null) {
+            /*SystemProperties.set(PROPERTY_ICC_OPERATOR_ISO_COUNTRY,
+                    MccTable.countryCodeForMcc(Integer.parseInt(mImsi.substring(0,3))));*/
             SystemProperties.set(PROPERTY_ICC_OPERATOR_ISO_COUNTRY,
-                    MccTable.countryCodeForMcc(Integer.parseInt(mImsi.substring(0,3))));
+                    MccTable.countryCodeForMcc(460));
         }
         recordsLoadedRegistrants.notifyRegistrants(
             new AsyncResult(null, null, null));
