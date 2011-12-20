@@ -37,7 +37,9 @@ public class CdmaDataConnection extends DataConnection {
     private final static int PS_NET_DOWN_REASON_OPTION_NOT_SUPPORTED                = 32;
     private final static int PS_NET_DOWN_REASON_OPTION_UNSUBSCRIBED                 = 33;
 
-
+    //***** Instance Variables
+    private ApnSetting apn;
+    
     // ***** Constructor
     private CdmaDataConnection(CDMAPhone phone, String name) {
         super(phone, name);
@@ -68,8 +70,13 @@ public class CdmaDataConnection extends DataConnection {
      */
     @Override
     protected void onConnect(ConnectionParams cp) {
-        if (DBG) log("CdmaDataConnection Connecting...");
+        
+        if (DBG) log("Connecting to carrier: '" + cp.apn.carrier
+                + "' APN: '" + cp.apn.apn
+                + "' proxy: '" + cp.apn.proxy + "' port: '" + cp.apn.port);
 
+        setHttpProxy (cp.apn.proxy, cp.apn.port);
+        
         createTime = -1;
         lastFailTime = -1;
         lastFailCause = FailCause.NONE;
@@ -88,7 +95,7 @@ public class CdmaDataConnection extends DataConnection {
         phone.mCM.setupDataCall(
                 Integer.toString(RILConstants.SETUP_DATA_TECH_CDMA),
                 Integer.toString(dataProfile),
-                null, null, null,
+                null, cp.apn.user, cp.apn.password,
                 Integer.toString(RILConstants.SETUP_DATA_AUTH_PAP_CHAP),
                 RILConstants.SETUP_DATA_PROTOCOL_IP, msg);
     }
@@ -136,5 +143,19 @@ public class CdmaDataConnection extends DataConnection {
     @Override
     protected void log(String s) {
         Log.d(LOG_TAG, "[" + getName() + "] " + s);
+    }
+    
+    private void setHttpProxy(String httpProxy, String httpPort) {
+        if (httpProxy == null || httpProxy.length() == 0) {
+            phone.setSystemProperty("net.gprs.http-proxy", null);
+            return;
+        }
+
+        if (httpPort == null || httpPort.length() == 0) {
+            httpPort = "8080";     // Default to port 8080
+        }
+
+        phone.setSystemProperty("net.gprs.http-proxy",
+                "http://" + httpProxy + ":" + httpPort + "/");
     }
 }
