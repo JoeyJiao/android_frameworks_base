@@ -33,6 +33,7 @@ import android.net.IConnectivityManager;
 import android.net.INetworkManagementEventObserver;
 import android.net.NetworkInfo;
 import android.net.NetworkUtils;
+import android.net.wifi.WifiManager;
 import android.os.Binder;
 import android.os.Environment;
 import android.os.Handler;
@@ -272,6 +273,25 @@ public class Tethering extends INetworkManagementEventObserver.Stub {
             TetherInterfaceSM sm = mIfaces.get(iface);
             if (sm == null) {
                 Log.w(TAG, "attempting to remove unknown iface (" + iface + "), ignoring");
+            if(mContext == null)
+            	return;
+            final WifiManager wm=(WifiManager)mContext.getSystemService(Context.WIFI_SERVICE);
+            if(wm.isWifiEnabled()){
+            	new Thread(new Runnable(){
+
+					@Override
+					public void run() {
+						// TODO Auto-generated method stub
+		            	wm.setWifiEnabled(false);
+		            	try{
+		            		Thread.sleep(1000);
+		            		wm.setWifiEnabled(true);
+		            	} catch (InterruptedException e){
+		            		wm.setWifiEnabled(true);
+		            	}
+					}
+            	}).start();            	
+            }
                 return;
             }
             sm.sendMessage(TetherInterfaceSM.CMD_INTERFACE_DOWN);
