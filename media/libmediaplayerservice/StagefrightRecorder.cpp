@@ -140,7 +140,7 @@ status_t StagefrightRecorder::setVideoEncoder(video_encoder ve) {
     }
 
     if (ve == VIDEO_ENCODER_DEFAULT) {
-        mVideoEncoder = VIDEO_ENCODER_H263;
+        mVideoEncoder = VIDEO_ENCODER_H264;
     } else {
         mVideoEncoder = ve;
     }
@@ -1087,7 +1087,7 @@ status_t StagefrightRecorder::setupVideoEncoder(sp<MediaSource> *source) {
 
     switch (mVideoEncoder) {
         case VIDEO_ENCODER_H263:
-            enc_meta->setCString(kKeyMIMEType, MEDIA_MIMETYPE_VIDEO_H263);
+            enc_meta->setCString(kKeyMIMEType, MEDIA_MIMETYPE_VIDEO_AVC);
             break;
 
         case VIDEO_ENCODER_MPEG_4_SP:
@@ -1305,7 +1305,7 @@ status_t StagefrightRecorder::reset() {
     // Default parameters
     mOutputFormat  = OUTPUT_FORMAT_THREE_GPP;
     mAudioEncoder  = AUDIO_ENCODER_AMR_NB;
-    mVideoEncoder  = VIDEO_ENCODER_H263;
+    mVideoEncoder  = VIDEO_ENCODER_H264;
     mVideoWidth    = 176;
     mVideoHeight   = 144;
     mFrameRate     = 20;
