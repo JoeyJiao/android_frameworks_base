@@ -1540,7 +1540,7 @@ public class FmReceiver extends FmTransceiver
 
       re = mRdsData.enableAFjump(enable);
 
-      if (re == 0)
+      if (re == 1)
         return true;
 
       return false;

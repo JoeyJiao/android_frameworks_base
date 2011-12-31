@@ -74,7 +74,7 @@ enum BCM_FM_CMD
     BCM4325_I2C_FM_RDS_FLAG0,                        /*0x12  FM and RDS flag register*/
     BCM4325_I2C_FM_RDS_FLAG1,                        /*0x13  FM and RDS flag register*/
     BCM4325_I2C_RDS_WLINE,                           /*0x14  FIFO water line set level*/
-    BCM4325_I2C_RDS_BLKB_MATCH0,                     /*0x16  Block B match pattern*/
+    BCM4325_I2C_RDS_BLKB_MATCH0 = 0x16,                     /*0x16  Block B match pattern*/
     BCM4325_I2C_RDS_BLKB_MATCH1,                     /*0x17  Block B match pattern*/
     BCM4325_I2C_RDS_BLKB_MASK0,                      /*0x18  Block B mask pattern*/
     BCM4325_I2C_RDS_BLKB_MASK1,                      /*0x19  Block B mask pattern*/
@@ -247,10 +247,10 @@ static jint android_hardware_fmradio_FmReceiverJNI_acquireFdNative
     int init_success = 0;
     LOGD("Radio starting\n");
 
-    hci_w(BCM4325_I2C_FM_RDS_SYSTEM, BCM4325_FM_RDS_SYSTEM_FM);
+    hci_w(BCM4325_I2C_FM_RDS_SYSTEM, BCM4325_FM_RDS_SYSTEM_FM | BCM4325_FM_RDS_SYSTEM_RDS);
 
     /* Write the POWER register again.  If this fails, then we're screwed. */
-    if (hci_w(BCM4325_I2C_FM_RDS_SYSTEM,BCM4325_FM_RDS_SYSTEM_FM) < 0){
+    if (hci_w(BCM4325_I2C_FM_RDS_SYSTEM,BCM4325_FM_RDS_SYSTEM_FM | BCM4325_FM_RDS_SYSTEM_RDS) < 0){
         return FM_JNI_FAILURE;
     }
 
@@ -260,8 +260,8 @@ static jint android_hardware_fmradio_FmReceiverJNI_acquireFdNative
     }
 
     if (hci_w(BCM4325_I2C_FM_AUDIO_CTRL0,
-        BCM4325_FM_AUDIO_CTRL0_DAC_OUT_LEFT_ON | BCM4325_FM_AUDIO_CTRL0_DAC_OUT_RIGHT_ON |
-        BCM4325_FM_AUDIO_CTRL0_ROUTE_DAC_ENABLE | BCM4325_FM_AUDIO_CTRL0_DEMPH_75US) < 0) {
+        BCM4325_FM_AUDIO_CTRL0_RF_MUTE_ENABLE | BCM4325_FM_AUDIO_CTRL0_DAC_OUT_LEFT_ON | BCM4325_FM_AUDIO_CTRL0_DAC_OUT_RIGHT_ON |
+        BCM4325_FM_AUDIO_CTRL0_ROUTE_DAC_ENABLE) < 0) {
         return FM_JNI_FAILURE;
     }
 
@@ -357,10 +357,11 @@ static jint android_hardware_fmradio_FmReceiverJNI_startSearchNative
     int oldFreq = android_hardware_fmradio_FmReceiverJNI_getFreqNative(NULL,NULL,NULL) ;
 
     if ((oldFreq-100 <= 87500 && !dir) || (oldFreq+100 >= 108000 && dir)) {
-        LOGD("Can't seek %s. Already at end of band.",dir?"up":"down");
-        return FM_JNI_FAILURE;
+        //LOGD("Can't seek %s. Already at end of band.",dir?"up":"down");
+        //return FM_JNI_FAILURE;
+	oldFreq=dir?87500:108000;
     }
-    else
+    //else
         android_hardware_fmradio_FmReceiverJNI_setFreqNative(NULL,NULL,NULL,oldFreq+(dir?100:-100));
 
     if ( hci_w(BCM4325_I2C_FM_SEARCH_CTRL0, (dir ? BCM4325_FM_SEARCH_CTRL0_UP : BCM4325_FM_SEARCH_CTRL0_DOWN )  | BCM4325_FLAG_STEREO_ACTIVE  |  BCM4325_FLAG_STEREO_DETECTION ) < 0){
@@ -403,7 +404,8 @@ static jint android_hardware_fmradio_FmReceiverJNI_cancelSearchNative
 static jint android_hardware_fmradio_FmReceiverJNI_getRSSINative
     (JNIEnv * env, jobject thiz, jint fd)
 {
-    return FM_JNI_SUCCESS;
+    return hci_r(BCM4325_I2C_FM_RSSI);
+    //return FM_JNI_SUCCESS;
 }
 
 /* native interface */

@@ -104,7 +104,7 @@ public class FmTransceiver
 
    private final String TAG = "FmTransceiver";
 
-   protected static int sFd;
+   protected static int sFd=-1;
    protected FmRxControls mControl;
    protected int mPowerMode;
    protected FmRxEventListner mRxEvents;
@@ -132,9 +132,10 @@ public class FmTransceiver
    */
    protected boolean acquire(String device){
       boolean bStatus;
-      if (sFd == 0)
+      if (sFd == -1)
       {
-         sFd = FmReceiverJNI.acquireFdNative("/dev/radio0");
+	 if(device!=null)
+         	sFd = FmReceiverJNI.acquireFdNative(device);
          Log.d(TAG, "** Opened "+ sFd);
       } else
       {
@@ -142,11 +143,11 @@ public class FmTransceiver
       }
       if(sFd != 0)
       {
-         bStatus = true;
+         bStatus = false;
       }
       else
       {
-         bStatus = false;
+         bStatus = true;
       }
       return (bStatus);
    }
@@ -178,11 +179,11 @@ public class FmTransceiver
    *    @see   #acquire
    */
    protected boolean release(String device) {
-      if (sFd!=0)
+      if (sFd==0)
       {
          FmReceiverJNI.closeFdNative(sFd);
          Log.d(TAG, "Turned off: " + sFd);
-         sFd =0;
+         sFd =-1;
       } else
       {
          Log.d(TAG, "Error turning off");
@@ -358,7 +359,7 @@ public class FmTransceiver
    public boolean enable (FmConfig configSettings, int device){
 
 
-      Log.d(TAG, "turning on %d" + device);
+      Log.d(TAG, "turning on device " + device);
       mControl.fmOn(sFd, device);
 
       Log.d(TAG, "Calling fmConfigure");
