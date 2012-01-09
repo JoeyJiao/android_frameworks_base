@@ -99,6 +99,8 @@ public class SignalToneUtil {
     }
 
     public static int getAudioToneFromSignalInfo(int signalType, int alertPitch, int signal) {
+	if(signalType == IS95_CONST_IR_SIGNAL_IS54B && alertPitch == IS95_CONST_IR_ALERT_MED && signal == IS95_CONST_IR_SIG_ISDN_INTGRP)
+	signal = IS95_CONST_IR_SIG_ISDN_NORMAL;
         Integer result = hm.get(signalParamHash(signalType, alertPitch, signal));
         if (result == null) {
             return CDMA_INVALID_TONE;

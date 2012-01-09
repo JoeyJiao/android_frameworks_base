@@ -174,7 +174,7 @@ private:
     struct CamcorderProfile {
         CamcorderProfile()
             : mCameraId(0),
-              mFileFormat(OUTPUT_FORMAT_THREE_GPP),
+              mFileFormat(OUTPUT_FORMAT_MPEG_4),
               mQuality(CAMCORDER_QUALITY_HIGH),
               mDuration(0),
               mVideoCodec(0),
