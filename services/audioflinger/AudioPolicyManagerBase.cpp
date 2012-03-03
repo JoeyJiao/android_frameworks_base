@@ -1863,6 +1863,15 @@ float AudioPolicyManagerBase::computeVolume(int stream, int index, audio_io_hand
     int volInt = (100 * (index - streamDesc.mIndexMin)) / (streamDesc.mIndexMax - streamDesc.mIndexMin);
     volume = AudioSystem::linearToLog(volInt);
 
+    if((device & AudioSystem::DEVICE_OUT_SPEAKER) && (((AudioSystem::stream_type)stream==AudioSystem::MUSIC) || ((AudioSystem::stream_type)stream==AudioSystem::RING))){
+	float volumeFactor = SONIFICATION_HEADSET_VOLUME_FACTOR;
+	if((AudioSystem::stream_type)stream==AudioSystem::MUSIC){
+		volumeFactor = pow(10.0, -15.0/20.0);
+	}else if((AudioSystem::stream_type)stream==AudioSystem::RING){
+		volumeFactor = pow(10.0, -6.0/20.0);
+	}
+	volume *= volumeFactor;
+    }
     // if a headset is connected, apply the following rules to ring tones and notifications
     // to avoid sound level bursts in user's ears:
     // - always attenuate ring tones and notifications volume by 6dB
