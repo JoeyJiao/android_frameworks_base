@@ -1863,12 +1863,16 @@ float AudioPolicyManagerBase::computeVolume(int stream, int index, audio_io_hand
     int volInt = (100 * (index - streamDesc.mIndexMin)) / (streamDesc.mIndexMax - streamDesc.mIndexMin);
     volume = AudioSystem::linearToLog(volInt);
 
+/* Correct sound burst for huawei devices using bad speaker hardware */
     if((device & AudioSystem::DEVICE_OUT_SPEAKER) && (((AudioSystem::stream_type)stream==AudioSystem::MUSIC) || ((AudioSystem::stream_type)stream==AudioSystem::RING))){
+        char buf[PROPERTY_VALUE_MAX];
 	float volumeFactor = SONIFICATION_HEADSET_VOLUME_FACTOR;
 	if((AudioSystem::stream_type)stream==AudioSystem::MUSIC){
-		volumeFactor = pow(10.0, -15.0/20.0);
+        	property_get("burst.correction.music", buf, "15");
+		volumeFactor = pow(10.0, -atof(buf)/20.0);
 	}else if((AudioSystem::stream_type)stream==AudioSystem::RING){
-		volumeFactor = pow(10.0, -6.0/20.0);
+        	property_get("burst.correction.ring", buf, "6");
+		volumeFactor = pow(10.0, -atof(buf)/20.0);
 	}
 	volume *= volumeFactor;
     }
